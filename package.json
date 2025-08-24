@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@strapi/plugin-documentation": "^5.23.0",
+    "react-material-ui-carousel": "^3.4.2"
+  }
+}
