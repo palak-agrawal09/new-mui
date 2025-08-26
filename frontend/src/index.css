@@ -1,3 +1,7 @@
 .p_tbdr {
   border: 1px, solid, black;
 }
+
+.react-select__menu {
+  z-index: 9999 !important;
+}

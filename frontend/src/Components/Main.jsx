@@ -143,123 +143,190 @@ const data = [
 ];
 
 export default function Main() {
-    return (
-        <Box sx={{ p: 3, backgroundColor: "#f5f5f5" }}>
-            {/* Banner Carousel */}
-            <Carousel indicators={false} navButtonsAlwaysVisible>
-                {bannerImages.map((item, idx) => (
-                    <Card key={idx} sx={{ display: "flex", mb: 3 }}>
-                        <CardMedia component="img" image={item.image} sx={{ width: 300 }} />
-                        <CardContent>
-                            <Typography variant="h6">{item.title}</Typography>
-                            <Typography variant="body2" color="text.secondary">
-                                {item.subtitle}
-                            </Typography>
-                        </CardContent>
-                    </Card>
-                ))}
-            </Carousel>
-
-            {/* Promo Cards */}
-            <Grid container spacing={2} sx={{ mt: 2 }}>
-                {promoCards.map((card, idx) => (
-                    <Grid item xs={6} sm={3} key={idx}>
-                        <Card sx={{ textAlign: "center", p: 2 }}>
-                            <CardMedia
-                                component="img"
-                                image={card.image}
-                                sx={{ height: 100, objectFit: "cover" }}
-                            />
-                            <CardContent>
-                                <Typography variant="subtitle1">{card.title}</Typography>
-                                <Typography variant="body2" color="text.secondary">
-                                    {card.subtitle}
-                                </Typography>
-                            </CardContent>
-                        </Card>
-                    </Grid>
-                ))}
-            </Grid>
-
-            {/* Categories (2 rows horizontally like Justdial) */}
-            <Box
-                sx={{
-                    mt: 4,
-                    display: "flex",
-                    flexWrap: "wrap",
-                    justifyContent: "center",
-                    gap: 3,
-                    p: 2,
-                }}
-            >
-                {categories.map((cat, idx) => (
-                    <Box
-                        key={idx}
-                        sx={{
-                            textAlign: "center",
-                            width: "80px",
-                            mb: 2,
-                        }}
-                        component={cat.name === "Beauty Spa" ? Link : "div"}
-                        to={cat.name === "Beauty Spa" ? "/business-listing" : undefined}
-                        style={{ textDecoration: "none", color: "inherit" }}
-                    >
-                        <Avatar
-                            sx={{
-                                bgcolor: "#fff",
-                                border: "1px solid #020e1aff",
-                                mb: 1,
-                                width: 70,
-                                height: 70,
-                                mx: "auto",
-                                color: "#020c16ff",
-                            }}
-                        >
-                            {cat.icon}
-                        </Avatar>
-                        <Typography variant="caption" fontWeight={500}>
-                            {cat.name}
-                        </Typography>
-                    </Box>
-                ))}
-            </Box>
-
-            {/* Services Grid */}
-            <Box sx={{ px: 4, py: 4 }}>
-                <Grid container spacing={4}>
-                    {data.map((section, idx) => (
-                        <Grid item xs={12} md={6} key={idx}>
-                            <Box sx={{ mb: 2 }}>
-                                <Typography variant="h6" fontWeight={600}>
-                                    {section.title}
-                                </Typography>
-                            </Box>
-
-                            <Grid container spacing={2}>
-                                {section.items.map((item, index) => (
-                                    <Grid item xs={4} key={index}>
-                                        <Card sx={{ borderRadius: 2 }}>
-                                            <CardActionArea>
-                                                <CardMedia
-                                                    component="img"
-                                                    height="120"
-                                                    image={item.img}
-                                                    alt={item.label}
-                                                />
-                                                <CardContent sx={{ textAlign: "center", py: 1 }}>
-                                                    <Typography variant="body2" fontWeight={500}>
-                                                        {item.label}
-                                                    </Typography>
-                                                </CardContent>
-                                            </CardActionArea>
-                                        </Card>
-                                    </Grid>
-                                ))}
-                            </Grid>
+    return (<Box
+        sx={{
+            p: 2,
+            bgcolor: "#f9f9f9",
+            borderRadius: 2,
+            maxWidth: "1200px",
+            mx: "auto",
+        }}
+    >
+        <Grid container spacing={2}>
+            {/* Left: Promo Cards */}
+            <Grid item xs={12} md={4}>
+                <Grid container spacing={2}>
+                    {promoCards.map((card, index) => (
+                        <Grid item xs={6} sm={6} md={12} key={index}>
+                            <Card
+                                sx={{
+                                    borderRadius: 2,
+                                    boxShadow: 2,
+                                    height: "100%",
+                                }}
+                            >
+                                <CardActionArea>
+                                    <CardMedia
+                                        component="img"
+                                        height="120"
+                                        image={card.image}
+                                        alt={card.title}
+                                    />
+                                    <CardContent>
+                                        <Typography
+                                            variant="subtitle1"
+                                            sx={{ fontWeight: "bold" }}
+                                        >
+                                            {card.title}
+                                        </Typography>
+                                        <Typography variant="body2" color="text.secondary">
+                                            {card.subtitle}
+                                        </Typography>
+                                    </CardContent>
+                                </CardActionArea>
+                            </Card>
                         </Grid>
                     ))}
                 </Grid>
-            </Box>
+            </Grid>
+
+            {/* Right: Banner Carousel */}
+            <Grid item xs={12} md={8}>
+                <Box
+                    sx={{
+                        height: 300,
+                        borderRadius: 2,
+                        overflow: "hidden",
+                        "& .MuiPaper-root": { borderRadius: 2 },
+                    }}
+                >
+                    <Carousel
+                        indicators={false}
+                        navButtonsAlwaysVisible
+                        autoPlay
+                        animation="slide"
+                        sx={{ height: "100%" }}
+                    >
+                        {bannerImages.map((item, idx) => (
+                            <Box
+                                key={idx}
+                                sx={{
+                                    height: "100%",
+                                    width: "100%",
+                                    position: "relative",
+                                }}
+                            >
+                                <CardMedia
+                                    component="img"
+                                    image={item.image}
+                                    alt={item.title}
+                                    sx={{
+                                        height: "100%",
+                                        width: "100%",
+                                        objectFit: "cover",
+                                    }}
+                                />
+                                {/* Overlay text */}
+                                <Box
+                                    sx={{
+                                        position: "absolute",
+                                        bottom: 16,
+                                        left: 16,
+                                        bgcolor: "rgba(0,0,0,0.5)",
+                                        color: "#fff",
+                                        px: 2,
+                                        py: 1,
+                                        borderRadius: 1,
+                                    }}
+                                >
+                                    <Typography variant="h6">{item.title}</Typography>
+                                    <Typography variant="body2">{item.subtitle}</Typography>
+                                </Box>
+                            </Box>
+                        ))}
+                    </Carousel>
+                </Box>
+            </Grid>
+        </Grid>
+        {/* Categories (2 rows horizontally like Justdial) */}
+        <Box
+            sx={{
+                mt: 4,
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "center",
+                gap: 3,
+                p: 2,
+            }}
+        >
+            {categories.map((cat, idx) => (
+                <Box
+                    key={idx}
+                    sx={{
+                        textAlign: "center",
+                        width: "80px",
+                        mb: 2,
+                    }}
+                    component={cat.name === "Beauty Spa" ? Link : "div"}
+                    to={cat.name === "Beauty Spa" ? "/business-listing" : undefined}
+                    style={{ textDecoration: "none", color: "inherit" }}
+                >
+                    <Avatar
+                        sx={{
+                            bgcolor: "#fff",
+                            border: "1px solid #020e1aff",
+                            mb: 1,
+                            width: 70,
+                            height: 70,
+                            mx: "auto",
+                            color: "#020c16ff",
+                        }}
+                    >
+                        {cat.icon}
+                    </Avatar>
+                    <Typography variant="caption" fontWeight={500}>
+                        {cat.name}
+                    </Typography>
+                </Box>
+            ))}
         </Box>
+
+        {/* Services Grid */}
+        <Box sx={{ px: 4, py: 4 }}>
+            <Grid container spacing={4}>
+                {data.map((section, idx) => (
+                    <Grid item xs={12} md={6} key={idx}>
+                        <Box sx={{ mb: 2 }}>
+                            <Typography variant="h6" fontWeight={600}>
+                                {section.title}
+                            </Typography>
+                        </Box>
+
+                        <Grid container spacing={2}>
+                            {section.items.map((item, index) => (
+                                <Grid item xs={4} key={index}>
+                                    <Card sx={{ borderRadius: 2 }}>
+                                        <CardActionArea>
+                                            <CardMedia
+                                                component="img"
+                                                height="120"
+                                                image={item.img}
+                                                alt={item.label}
+                                            />
+                                            <CardContent sx={{ textAlign: "center", py: 1 }}>
+                                                <Typography variant="body2" fontWeight={500}>
+                                                    {item.label}
+                                                </Typography>
+                                            </CardContent>
+                                        </CardActionArea>
+                                    </Card>
+                                </Grid>
+                            ))}
+                        </Grid>
+                    </Grid>
+                ))}
+            </Grid>
+        </Box>
+    </Box >
     );
 }
