@@ -1,183 +1,123 @@
-import React, { useState } from "react";
-import {
-    Box,
-    Stack,
-    Typography,
-    IconButton,
-    InputBase,
-    Button,
-    Menu,
-    MenuItem
-} from "@mui/material";
-import SearchIcon from "@mui/icons-material/Search";
-import TranslateIcon from "@mui/icons-material/Translate";
-import Select from "react-select";
-
-const options = [
-    { value: "detect", label: "📍 Detect Location" },
-    { value: "nimach", label: "nimach" },
-    { value: "Mandsaur", label: "Mandsaur" },
-    { value: "chittor", label: "chittor" },
-    { value: "Delhi", label: "Delhi" },
-    { value: "Udaipur", label: "Udaipur" },
-    { value: "Ajmer", label: "Ajmer" },
-    { value: "Banglore", label: "Banglore" },
-    { value: "Jaipur", label: "Jaipur" },
-    { value: "Mumbai", label: "Mumbai" },
-    { value: "Jodhpur", label: "Jodhpur" },
-];
+import { Box, Button, Grid, Menu, MenuItem } from '@mui/material';
+import MessageIcon from '@mui/icons-material/Message';
+import CampaignIcon from '@mui/icons-material/Campaign';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
+import { BASE_URL } from '../helper/Helper';
+import axios from 'axios';
 
 export default function Header() {
-    const [selectedOption, setSelectedOption] = useState(options[0]);
+    const [locale, setLocale] = useState([]);
     const [anchorEl, setAnchorEl] = useState(null);
-    const [language, setLanguage] = useState("EN"); // default language
 
-    const handleSelectChange = (option) => setSelectedOption(option);
+    const [options, setOptions] = useState([
+        { value: 'detect location', label: 'Detect Location' },
+        { value: 'Indore', label: 'Indore' },
+        { value: 'Neemuch', label: 'Neemuch' },
+        { value: 'Ujjain', label: 'Ujjain' },
+        { value: 'Bhopal', label: 'Bhopal' },
+        { value: 'Mandsaur', label: 'Mandsaur' }
+    ]);
 
-    // 🔹 Language Menu Handlers
-    const handleLangClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-    const handleLangClose = (lang) => {
-        if (lang) setLanguage(lang);
-        setAnchorEl(null);
+    const [business] = useState([
+        { value: "hotels", label: "Hotels" },
+        { value: 'Restaurants', label: 'Restaurants' },
+        { value: 'Beauty Spa', label: 'Beauty Spa' },
+        { value: 'Home Decor', label: 'Home Decor' },
+        { value: 'Hospitals', label: 'Hospitals' },
+        { value: 'Gym', label: 'Gym' },
+        { value: 'Software Company', label: 'Software Company' },
+        { value: 'Education', label: 'Education' },
+        { value: 'Car Hire', label: 'Car Hire' }
+    ]);
+
+    const [cityName, setCityName] = useState(null);
+
+    useEffect(() => {
+        axios.get(`${BASE_URL}/api/i18n/locales`)
+            .then((response) => setLocale(response?.data))
+            .catch((error) => console.log(error));
+    }, []);
+
+    const detectLocation = (selectedOption) => {
+        if (selectedOption.value === "detect location") {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition((position) => {
+                    const lat = position.coords.latitude;
+                    const long = position.coords.longitude;
+                    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${long}&accept-language=en`;
+
+                    fetch(url)
+                        .then(res => res.json())
+                        .then(data => {
+                            const city = data.address.city || data.address.town || data.address.village || "Unknown";
+                            const detectedCity = { value: city, label: city };
+                            setCityName(detectedCity);
+
+                            if (!options.some(opt => opt.value === city)) {
+                                setOptions(prev => [prev[0], ...prev.slice(1), detectedCity]);
+                            }
+                        })
+                        .catch(err => console.error(err));
+                });
+            }
+        } else {
+            setCityName(selectedOption);
+        }
     };
 
     return (
-        <>
-            {/* 🔹 Header Bar */}
+        <Box
+            component="header"
+            sx={{ height: "83px", display: "flex", alignItems: "center", px: 2 }}
+        >
+            {/* Logo */}
             <Box
-                component="header"
-                sx={{
-                    boxShadow: 1,
-                    p: 1,
-                    bgcolor: "#f8f8f8",
-                    position: "fixed",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    zIndex: 1100,
-                }}
-            >
-                {/* 🔹 Top Bar */}
-                <Stack direction="row" spacing={4} justifyContent="flex-end" px={2}>
-                    {/* Language Selector with Icon */}
-                    <Stack
-                        direction="row"
-                        spacing={0.5}
-                        alignItems="center"
-                        sx={{ cursor: "pointer" }}
-                        onClick={handleLangClick}
-                    >
-                        <TranslateIcon fontSize="small" sx={{ color: "gray" }} />
-                        <Typography variant="body2">{language}</Typography>
-                    </Stack>
+                component="img"
+                src="https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg"
+                alt="Logo"
+                sx={{ height: '25px', mr: 3 }}
+            />
 
-                    <Typography variant="body2" sx={{ cursor: "pointer" }}>
-                        Investor
-                    </Typography>
-                    <Typography variant="body2" sx={{ cursor: "pointer" }}>
-                        We are Hiring
-                    </Typography>
-                    <Typography variant="body2" sx={{ cursor: "pointer" }}>
-                        Login
-                    </Typography>
-                </Stack>
-
-                {/* 🔹 Language Dropdown */}
-                <Menu
-                    anchorEl={anchorEl}
-                    open={Boolean(anchorEl)}
-                    onClose={() => handleLangClose(null)}
-                >
-                    <MenuItem onClick={() => handleLangClose("EN")}>English</MenuItem>
-                    <MenuItem onClick={() => handleLangClose("HI")}>हिंदी</MenuItem>
-                    <MenuItem onClick={() => handleLangClose("MR")}>मराठी</MenuItem>
-                    <MenuItem onClick={() => handleLangClose("GU")}>ગુજરાતી</MenuItem>
-                </Menu>
-
-                {/* 🔹 Logo + Search */}
-                <Stack direction="row" spacing={3} alignItems="center" mt={2} px={2}>
-                    {/* Logo */}
-                    <Box
-                        component="img"
-                        src="https://akam.cdn.jdmagicbox.com/images/icontent/jdrwd/jdlogosvg.svg"
-                        alt="Justdial Logo"
-                        sx={{ height: 40 }}
+            {/* City + Business Dropdowns */}
+            <Grid container spacing={2} sx={{ flex: 1 }}>
+                <Grid item xs={6}>
+                    <Select
+                        options={options}
+                        value={cityName}
+                        onChange={detectLocation}
                     />
+                </Grid>
+                <Grid item xs={6}>
+                    <Select options={business} />
+                </Grid>
+            </Grid>
 
-                    {/* Search + Dropdown */}
-                    <Box sx={{ position: "relative", flex: 1, maxWidth: "700px" }}>
-                        <Box
-                            sx={{
-                                display: "flex",
-                                alignItems: "center",
-                                border: "1px solid #ccc",
-                                borderRadius: "30px",
-                                px: 2,
-                                py: 0.5,
-                                pl: "160px",
-                            }}
-                        >
-                            <InputBase
-                                placeholder="Search for Products, Services and Businesses"
-                                fullWidth
-                            />
-                            <IconButton>
-                                <SearchIcon />
-                            </IconButton>
-                        </Box>
+            {/* Language Dropdown (MUI Menu) */}
+            <Button
+                sx={{ ml: 2 }}
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+            >
+                EN
+            </Button>
+            <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={() => setAnchorEl(null)}
+            >
+                {locale.map((cv, idx) => (
+                    <MenuItem key={idx}>{cv.name}</MenuItem>
+                ))}
+            </Menu>
 
-                        {/* Dropdown */}
-                        <Box
-                            sx={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "10px",
-                                transform: "translateY(-50%)",
-                                width: "140px",
-                                "& .react-select__control": {
-                                    border: "none",
-                                    boxShadow: "none",
-                                    borderRadius: "20px",
-                                    minHeight: "35px",
-                                },
-                            }}
-                        >
-                            <Select
-                                options={options}
-                                value={selectedOption}
-                                onChange={handleSelectChange}
-                                classNamePrefix="react-select"
-                                menuPortalTarget={document.body}
-                                styles={{
-                                    control: (base) => ({
-                                        ...base,
-                                        border: "none",
-                                        boxShadow: "none",
-                                        minHeight: "35px",
-                                    }),
-                                    dropdownIndicator: (base) => ({
-                                        ...base,
-                                        padding: "2px",
-                                    }),
-                                    valueContainer: (base) => ({
-                                        ...base,
-                                        padding: "0px 6px",
-                                    }),
-                                    menuPortal: (base) => ({
-                                        ...base,
-                                        zIndex: 9999,
-                                    }),
-                                }}
-                            />
-                        </Box>
-                    </Box>
-                </Stack>
-            </Box>
-
-            {/* Push content below header */}
-            <Box sx={{ pt: "90px" }} />
-        </>
+            {/* Action Buttons */}
+            <Button variant="text" sx={{ color: "black", fontSize: "12px", textTransform: "none", ml: 2 }}>We Are Hiring</Button>
+            <Button variant="text" sx={{ color: "black", fontSize: "12px", textTransform: "none" }}>Investor Relations</Button>
+            <Button variant="text" sx={{ color: "black", fontSize: "12px", textTransform: "none" }}><MessageIcon fontSize="small" /> Leads</Button>
+            <Button variant="text" sx={{ color: "black", fontSize: "12px", textTransform: "none" }}><CampaignIcon fontSize="small" /> Advertise</Button>
+            <Button variant="text" sx={{ color: "black", fontSize: "12px", textTransform: "none" }}><TrendingUpIcon fontSize="small" /> Free Listing</Button>
+            <Button variant="contained" sx={{ fontSize: "12px", ml: 1, textTransform: "none" }}>Login/SignUp</Button>
+        </Box>
     );
 }
